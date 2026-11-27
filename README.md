@@ -2,6 +2,8 @@
 
 **A ROS 2–style robot OS that fits on a single microcontroller.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24574818.svg)](https://doi.org/10.5281/zenodo.24574818)
+
 Robolet runs a complete 2D-lidar navigation stack on one ESP32-S3: mapping (SLAM), localization (AMCL-style particle filter), detection of and recovery from a kidnapped robot, path planning, path following, collision monitoring and recovery behaviors. On the chip, the software is organized like ROS 2 and Nav2: nodes, topics, services, parameters, lifecycle nodes with a lifecycle manager, and the `navigate_to_pose` / `navigate_through_poses` actions. Messages are serialized in CDR, byte for byte the same as ROS 2 for the 86 types checked. A PC is optional: it can watch the robot, send commands with a `ros2`-style command line, and publish the chip's topics on a ROS 2 network for rviz2.
 
 [한국어 README](README.ko.md)
@@ -135,4 +137,4 @@ Robolet is an independent project. It is not affiliated with or endorsed by Open
 
 ## Citing
 
-See [CITATION.cff](CITATION.cff).
+See [CITATION.cff](CITATION.cff). DOI for all versions: [10.5281/zenodo.24574818](https://doi.org/10.5281/zenodo.24574818); version 0.16.0: [10.5281/zenodo.24574819](https://doi.org/10.5281/zenodo.24574819) (Zenodo).

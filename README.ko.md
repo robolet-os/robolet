@@ -2,6 +2,8 @@
 
 **마이크로컨트롤러 하나에 들어가는 ROS 2 방식 로봇 OS**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24574818.svg)](https://doi.org/10.5281/zenodo.24574818)
+
 Robolet은 ESP32-S3 칩 하나에서 2D 라이다 주행 소프트웨어 전체를 실행합니다. 포함된 기능은 다음과 같습니다.
 
 - 지도 작성 (SLAM, simultaneous localization and mapping)
@@ -146,7 +148,7 @@ Robolet은 독립 프로젝트입니다. Open Robotics(ROS, ROS 2), Nav2 프로�
 
 ## 인용
 
-[CITATION.cff](CITATION.cff)를 보십시오.
+[CITATION.cff](CITATION.cff)를 보십시오. DOI(digital object identifier)는 모든 버전 [10.5281/zenodo.24574818](https://doi.org/10.5281/zenodo.24574818), 버전 0.16.0 [10.5281/zenodo.24574819](https://doi.org/10.5281/zenodo.24574819)입니다(Zenodo).
 
 ## 용어
 
@@ -163,6 +165,7 @@ Robolet은 독립 프로젝트입니다. Open Robotics(ROS, ROS 2), Nav2 프로�
 | CDR | common data representation | ROS 2(DDS)가 메시지를 바이트로 바꾸는 형식 | OMG DDS-XTypes 1.3 (Extended CDR 인코딩) |
 | SLAM | simultaneous localization and mapping | 이동하며 지도를 만들고 동시에 그 지도에서 위치를 추정하는 방법 | Thrun, Burgard, Fox, *Probabilistic Robotics*, MIT Press, 2005 |
 | 발행 | publish | 노드가 토픽에 메시지를 보내는 것 | ROS 2 문서 |
+| DOI | digital object identifier | 자료에 붙는 영구 식별자. 주소가 바뀌어도 같은 자료를 가리킴 | DOI Foundation (doi.org) |
 | 브리지 | bridge | 칩의 토픽을 PC의 ROS 2 네트워크로 넘기고, rviz2의 목표를 칩으로 보내는 PC 프로그램(`tools/ros2_bridge.py`) | 이 저장소의 정의 |
 | 점유 격자 지도 | occupancy grid map | 공간을 칸으로 나누고 칸마다 비었는지 차 있는지를 적은 지도 | Thrun 외, 2005; 대한기계학회 학술대회 2001 "스테레오 비전 방식을 이용한 자율 이동로봇의 격자지도 작성" (키워드 "점유격자 지도") |
 | costmap | costmap | 점유 격자 지도에 장애물까지의 거리에 따른 비용을 더한 지도. 국내 자료도 영어를 그대로 씀 | Nav2 문서 (nav2_costmap_2d); tilnote "ROS2" 특강의 Nav2 장 |

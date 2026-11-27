@@ -9,6 +9,14 @@ authors:
 version: "0.16.0"
 date-released: "2026-11-27"
 license: Apache-2.0
+doi: "10.5281/zenodo.24574818"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24574818"
+    description: "All versions (resolves to the latest)"
+  - type: doi
+    value: "10.5281/zenodo.24574819"
+    description: "Version 0.16.0"
 repository-code: "https://github.com/robolet-os/robolet"
 keywords:
   - ROS 2
