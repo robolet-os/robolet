@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use Robolet, please cite it as below."
+title: "Robolet: a ROS 2-style robot OS on a single microcontroller"
+type: software
+authors:
+  - family-names: "Han"
+    given-names: "Kyujeong"
+    affiliation: "Independent researcher"
+version: "0.16.0"
+date-released: "2026-11-27"
+license: Apache-2.0
+repository-code: "https://github.com/robolet-os/robolet"
+keywords:
+  - ROS 2
+  - Nav2
+  - microcontroller
+  - ESP32-S3
+  - SLAM
+  - AMCL
+  - lidar navigation

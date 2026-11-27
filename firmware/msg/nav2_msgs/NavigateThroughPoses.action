@@ -1,0 +1,13 @@
+geometry_msgs/PoseStamped[] poses
+string behavior_tree
+---
+uint16 NONE = 0
+uint16 error_code
+string error_msg
+---
+geometry_msgs/PoseStamped current_pose
+builtin_interfaces/Duration navigation_time
+builtin_interfaces/Duration estimated_time_remaining
+int16 number_of_recoveries
+float32 distance_remaining
+int16 number_of_poses_remaining

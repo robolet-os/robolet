@@ -1,0 +1,24 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  pc-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install numpy pyserial rosbags
+      - name: PC tests (quick set)
+        run: bash firmware/test_host/run_pc_tests.sh
+  firmware-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install platformio
+      - name: Build the ESP32-S3 firmware
+        working-directory: firmware
+        run: python tools/gen_msgs.py && pio run -e s3 -e jarabot

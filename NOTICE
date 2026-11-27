@@ -1,0 +1,16 @@
+Robolet
+Copyright 2026 Kyujeong Han
+
+This product includes software developed by Kyujeong Han.
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The ROS 2 interface definitions in firmware/msg/ (.msg, .srv, .action files) follow the
+definitions of the ROS 2 packages they are named after (builtin_interfaces, std_msgs,
+geometry_msgs, sensor_msgs, nav_msgs, tf2_msgs, rcl_interfaces, lifecycle_msgs,
+action_msgs, unique_identifier_msgs, std_srvs, rosgraph_msgs, nav2_msgs), which are
+distributed under the Apache License, Version 2.0. Some unbounded arrays are given fixed
+capacities on the chip (firmware/msg/capacities.txt); the CDR encoding is unchanged.
+
+Robolet is an independent project and is not affiliated with or endorsed by Open Robotics,
+the Nav2 project, or Espressif Systems. ROS is a trademark of Open Robotics. ESP32 is a
+trademark of Espressif Systems.

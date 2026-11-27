@@ -1,0 +1,51 @@
+[ros] /dev/ttyACM0: sent 'k 0 1 0 3 bridge'
+[bridge] HELLO esp32ros-fw 0.13 (2026-11-26) | k 0 1 0 3 bridge
+[ros] chip: esp32ros-fw 0.13 (2026-11-26) | k 0 1 0 3 bridge
+PASS service list: 101 services | e.g. /controller_server/get_parameters [rcl_interfaces/srv/GetParameters]
+PASS node list: 15 nodes | amcl, behavior_server, bridge, bt_navigator, collision_monitor, controller_server, goal_checker, judge, lifecycle_manager_navigation, localization_monitor, mission, planner_server, sim_base, slam, x4_driver
+PASS param list /controller_server | use_sim_time, max_vel_x
+PASS param get max_vel_x | 0.3, unknown name -> type 0
+PASS param set max_vel_x 0.25 | now 0.25
+PASS param set max_vel_x 5.0 refused (out of range) | value out of range
+PASS param set max_vel_x 'fast' refused (wrong type) | wrong parameter type
+PASS param set amcl max_particles refused (read only) | parameter is read only
+PASS param set unknown name refused | parameter not declared
+PASS param set max_vel_x back to 0.3
+PASS param set behavior_server max_failures 4 (integer)
+PASS /parameter_events: max_vel_x changes | 2 events, [('max_vel_x', 0.25), ('max_vel_x', 0.3)]
+PASS param get use_sim_time (simulated clock) | True
+PASS param describe max_vel_x | 'm/s, forward speed limit', range [(0.0, 1.0)]
+PASS param describe amcl max_particles: read only | type 2
+PASS param types | [3, 1, 0]
+PASS set_parameters_atomically with one bad value: nothing set | parameter not declared, max_vel_x 0.3
+PASS set_parameters_atomically
+PASS param get lifecycle manager node_names | slam, amcl, localization_monitor, controller_server, planner_server, behavior_server, collision_monitor, goal_checker, bt_navigator
+PASS lifecycle get: controller_server, bt_navigator active | active, active
+PASS lifecycle list: active -> deactivate, shutdown | deactivate -> deactivating, shutdown -> shuttingdown
+PASS lifecycle manager is_active | all nodes active
+PASS manage_nodes PAUSE: nodes inactive | controller_server inactive
+PASS manage_nodes RESUME: nodes active | controller_server active
+PASS transition events (pause, resume) | deactivate active->deactivating; transition_success deactivating->inactive; activate inactive->activating; transition_success activating->active
+PASS change_state configure while active refused
+[ros] waiting for the first navigate_to_pose goal (after the mapping tour) ...
+   chip: [k] room/spin seed 0: map done, SLAM error max 0.053 m, map walls 0.016 m from true walls on average (91.8 % within 5 cm)
+   chip: [k]   unmapped box placed at (3.2-3.6, 3.6-4.4)
+PASS action status: a goal executing
+   chip: [k]   leg 1 A (6.5, 1.5): CANCELED | true distance 4.99 m
+   chip: [k]   leg 2 UNREACHABLE (3.0, 1.0): ABORT_GOAL_BLOCKED | true distance 1.59 m
+PASS action cancel_goal accepted | return_code 0
+PASS action get_result: CANCELED | status 5, error_msg 'CANCELED'
+[ros] letting the mission end ...
+   chip: [k]   kidnapped during leg 3 to (6.53, 1.39, -1.43)
+   chip: [k]   relocalized: 4 candidates, resolved by turning, error 0.01 m (search 1443 ms)
+   chip: [k]   leg 3 B (6.8, 5.2): DONE | true distance 0.22 m
+   chip: [k]   leg 4 C (2.3, 5.3): DONE | true distance 0.23 m
+   chip: [k]   leg 5 DOCK (1.5, 1.5): DONE | true distance 0.20 m
+   chip: [k]   robot nodes: 27.7 % of one core while mapping, 15.8 % while navigating (566 + 390 cycles)
+   chip: MISSION room spin seed 0 kidnap box | INCOMPLETE | legs 3/4, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | resolved_by_turning(4 cand, err 0.01 m) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 0, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.029 m | max cycle 1448 ms, search 1443 ms, multi update 102 ms
+   chip: RESULT mission: PASS (0 runs with wrong-pose driving or contacts) | total chip time 78 s
+PASS action feedback: mapping tour | 137 messages, poses left 10 -> 1, distance left 20.3 -> 0.1 m
+PASS action feedback: navigate_to_pose | 98 messages, distance left 0.32..7.87 m, navigation time up to 21 s
+PASS /clock: simulated time goes on | 137 messages, 0.1 .. 136.1 s
+PASS /rosout: log lines with node names | 9 lines from bt_navigator, judge, localization_monitor, sim_base
+RESULT ros: PASS (33 of 33 checks)

@@ -1,0 +1,263 @@
+
+=== [b] board check ===
+firmware robolet-fw 0.16 (2026-11-27), built Nov 27 2026 07:04:05 | PlatformIO espressif32 6.13.0, Arduino core 2.0.17, ESP-IDF v4.4.7-dirty
+chip ESP32-S3 rev 0, 2 cores, CPU 240 MHz
+last restart: unknown | last stage before it: mission world 4 seed 0: done
+flash 16 MB | PSRAM found, 8189 KB (free 8141 KB) | internal heap free 292 KB, largest block 263 KB
+PSRAM 4 MB pattern test: 0 errors, write 33.2 MB/s, read+check 52.3 MB/s
+RESULT board: PASS (expects flash >= 16 MB and PSRAM >= 8 MB for N16R8)
+
+commands: b board | l lidar 10 s | s lidar stream | p print one scan CSV | c compute benchmark | v virtual lidar | n virtual driving (n old: one loop) | k w m s o mission | K n m o batch (n/k/K ... old: one loop, ... bridge [rt] [hold]: topics to the PC tool, k ... gz: robot in Gazebo, tools/gzbridge.py) | m motor base | a all (b, c, l) | h help
+
+=== [K] missions: 5 worlds x 1 seeds, mode spin, options 3 (1 kidnap, 2 unmapped box) (several minutes per mission), nodes and topics ===
+[k] room/spin seed 0: map done, SLAM error max 0.043 m, map walls 0.016 m from true walls on average (93.3 % within 5 cm)
+[k]   unmapped box placed at (3.2-3.6, 3.6-4.4)
+[k]   leg 1 A (6.5, 1.5): DONE | true distance 0.16 m
+[k]   leg 2 UNREACHABLE (3.0, 1.0): ABORT_GOAL_BLOCKED | true distance 3.45 m
+[k]   kidnapped during leg 3 to (6.53, 1.39, -1.43)
+[k]   relocalized: 4 candidates, resolved by turning, error 0.02 m (search 1169 ms)
+[k]   leg 3 B (6.8, 5.2): DONE | true distance 0.22 m
+[k]   leg 4 C (2.3, 5.3): DONE | true distance 0.21 m
+[k]   leg 5 DOCK (1.5, 1.5): DONE | true distance 0.21 m
+[k]   robot nodes: 28.9 % of one core while mapping, 14.7 % while navigating (541 + 681 cycles)
+nodes (14):
+  /mission  pub: /parameter_events /navigator/leg /navigator/phase  sub: /ground_truth
+  /bt_navigator  pub: /parameter_events /bt_navigator/transition_event /navigate_through_poses/_action/feedback /navigate_through_poses/_action/status /navigate_to_pose/_action/feedback /navigate_to_
+  /x4_driver  pub: /scan /scan_cloud  sub: /odom
+  /slam  pub: /parameter_events /slam/transition_event /map /pose /tf  sub: /navigator/phase /odom /scan_cloud
+  /amcl  pub: /parameter_events /amcl/transition_event /amcl_pose /amcl/robot_pose /tf  sub: /navigator/phase /map /odom /initialpose /localization/status /scan_cloud
+  /localization_monitor  pub: /parameter_events /localization_monitor/transition_event /localization/status /initialpose /cmd_vel /localization/candidates  sub: /cmd_vel /map /navigator/phase /goal_p
+  /goal_checker  pub: /parameter_events /goal_checker/transition_event /goal_checker/reached  sub: /goal_pose /localization/status /amcl/robot_pose
+  /planner_server  pub: /parameter_events /planner_server/transition_event /plan /planner_server/result  sub: /map /goal_pose /behavior_server/event /initialpose /behavior_server/active /controller_s
+  /controller_server  pub: /parameter_events /controller_server/transition_event /cmd_vel_nav /controller_server/result /controller_server/feedback  sub: /map /navigator/phase /initialpose /goal_pose
+  /behavior_server  pub: /parameter_events /behavior_server/transition_event /cmd_vel_nav /behavior_server/event /behavior_server/active /behavior_server/result  sub: /goal_pose /localization/status 
+  /collision_monitor  pub: /parameter_events /collision_monitor/transition_event /cmd_vel  sub: /navigator/phase /behavior_server/result /scan_cloud /cmd_vel_nav
+  /judge  pub:  sub: /ground_truth /map /sim/kidnapped /navigator/phase /pose /amcl/robot_pose /localization/status /cmd_vel /controller_server/result
+  /sim_base  pub: /sim/kidnapped /odom /ground_truth /tf  sub: /navigator/phase /navigator/leg /controller_server/result /localization/status /cmd_vel
+  /lifecycle_manager_navigation  pub: /parameter_events  sub:
+topics (43):
+  /rosout                    rcl_interfaces/msg/Log                   1 pub 0 sub |     10 msgs   0.09 Hz | 304 B x 8
+  /parameter_events          rcl_interfaces/msg/ParameterEvent        11 pub 0 sub |      0 msgs   0.00 Hz | 9432 B x 1
+  /ground_truth              nav_msgs/msg/Odometry                    1 pub 3 sub |   1223 msgs   7.01 Hz | 736 B x 1
+  /navigator/leg             std_msgs/msg/Int32                       1 pub 1 sub |      5 msgs   0.05 Hz | 4 B x 1 latched
+  /navigator/phase           std_msgs/msg/Int32                       2 pub 7 sub |      3 msgs   0.01 Hz | 4 B x 1 latched
+  /bt_navigator/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /navigate_through_poses/_action/feedback nav2_msgs/action/NavigateThroughPoses_FeedbackMessage 1 pub 0 sub |    539 msgs   7.00 Hz | 136 B x 1
+  /navigate_through_poses/_action/status action_msgs/msg/GoalStatusArray          1 pub 0 sub |      2 msgs   0.01 Hz | 116 B x 1 latched
+  /navigate_to_pose/_action/feedback nav2_msgs/action/NavigateToPose_FeedbackMessage 1 pub 0 sub |    680 msgs   7.00 Hz | 128 B x 1
+  /navigate_to_pose/_action/status action_msgs/msg/GoalStatusArray          1 pub 0 sub |     10 msgs   0.09 Hz | 116 B x 1 latched
+  /plan                      nav_msgs/msg/Path                        2 pub 2 sub |     98 msgs   0.56 Hz | 176040 B x 1
+  /initialpose               geometry_msgs/msg/PoseWithCovarianceStamped 2 pub 3 sub |      2 msgs   0.02 Hz | 376 B x 1
+  /goal_pose                 geometry_msgs/msg/PoseStamped            1 pub 5 sub |      4 msgs   0.04 Hz | 88 B x 1
+  /navigator/cycle           std_msgs/msg/Int32                       1 pub 1 sub |    656 msgs   6.74 Hz | 4 B x 1
+  /controller_server/result  std_msgs/msg/Int32                       1 pub 4 sub |      1 msgs   0.00 Hz | 4 B x 1
+  /goal_checker/reached      std_msgs/msg/Int32                       1 pub 4 sub |      4 msgs   0.05 Hz | 4 B x 1
+  /localization/status       std_msgs/msg/Int32                       1 pub 8 sub |    681 msgs   7.00 Hz | 4 B x 1
+  /behavior_server/result    std_msgs/msg/Int32                       1 pub 2 sub |      0 msgs   0.00 Hz | 4 B x 1
+  /map                       nav_msgs/msg/OccupancyGrid               1 pub 6 sub |    198 msgs   2.56 Hz | 32120 B x 1 latched
+  /pose                      geometry_msgs/msg/PoseWithCovarianceStamped 1 pub 3 sub |    540 msgs   7.00 Hz | 376 B x 1
+  /amcl_pose                 geometry_msgs/msg/PoseWithCovarianceStamped 1 pub 2 sub |    132 msgs   1.36 Hz | 376 B x 1
+  /odom                      nav_msgs/msg/Odometry                    1 pub 4 sub |   1223 msgs   7.01 Hz | 736 B x 1
+  /scan                      sensor_msgs/msg/LaserScan                1 pub 0 sub |      0 msgs   0.00 Hz | 5828 B x 1
+  /scan_cloud                sensor_msgs/msg/PointCloud2              1 pub 6 sub |   1222 msgs   7.00 Hz | 9772 B x 1
+  /slam/transition_event     lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /tf                        tf2_msgs/msg/TFMessage                   3 pub 0 sub |   2419 msgs  13.86 Hz | 456 B x 1
+  /amcl/transition_event     lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /amcl/robot_pose           geometry_msgs/msg/PoseStamped            1 pub 6 sub |    656 msgs   6.74 Hz | 88 B x 1
+  /localization_monitor/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /cmd_vel                   geometry_msgs/msg/Twist                  2 pub 3 sub |   1196 msgs   6.86 Hz | 48 B x 1
+  /localization/candidates   geometry_msgs/msg/PoseArray              1 pub 0 sub |      2 msgs   1.17 Hz | 1384 B x 1
+  /goal_checker/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /planner_server/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /planner_server/result     std_msgs/msg/Int32                       1 pub 1 sub |      0 msgs   0.00 Hz | 4 B x 1
+  /behavior_server/event     std_msgs/msg/Int32                       1 pub 2 sub |      0 msgs   0.00 Hz | 4 B x 4
+  /behavior_server/active    std_msgs/msg/Int32                       1 pub 2 sub |      0 msgs   0.00 Hz | 4 B x 1
+  /controller_server/feedback std_msgs/msg/Int32                       1 pub 1 sub |    651 msgs   6.70 Hz | 4 B x 1
+  /controller_server/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /cmd_vel_nav               geometry_msgs/msg/Twist                  2 pub 1 sub |   1190 msgs   6.83 Hz | 48 B x 1
+  /behavior_server/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /collision_monitor/transition_event lifecycle_msgs/msg/TransitionEvent       1 pub 0 sub |      4 msgs   0.00 Hz | 88 B x 4
+  /sim/kidnapped             std_msgs/msg/Int32                       1 pub 1 sub |      1 msgs   0.00 Hz | 4 B x 1
+  /clock                     rosgraph_msgs/msg/Clock                  1 pub 0 sub |   1222 msgs   7.00 Hz | 8 B x 1
+services (102):
+  /mission/get_parameters                      rcl_interfaces/srv/GetParameters
+  /mission/set_parameters                      rcl_interfaces/srv/SetParameters
+  /mission/set_parameters_atomically           rcl_interfaces/srv/SetParametersAtomically
+  /mission/describe_parameters                 rcl_interfaces/srv/DescribeParameters
+  /mission/get_parameter_types                 rcl_interfaces/srv/GetParameterTypes
+  /mission/list_parameters                     rcl_interfaces/srv/ListParameters
+  /mission/stop                                std_srvs/srv/Trigger
+  /bt_navigator/get_parameters                 rcl_interfaces/srv/GetParameters
+  /bt_navigator/set_parameters                 rcl_interfaces/srv/SetParameters
+  /bt_navigator/set_parameters_atomically      rcl_interfaces/srv/SetParametersAtomically
+  /bt_navigator/describe_parameters            rcl_interfaces/srv/DescribeParameters
+  /bt_navigator/get_parameter_types            rcl_interfaces/srv/GetParameterTypes
+  /bt_navigator/list_parameters                rcl_interfaces/srv/ListParameters
+  /bt_navigator/change_state                   lifecycle_msgs/srv/ChangeState
+  /bt_navigator/get_state                      lifecycle_msgs/srv/GetState
+  /bt_navigator/get_available_transitions      lifecycle_msgs/srv/GetAvailableTransitions
+  /navigate_through_poses/_action/send_goal    nav2_msgs/action/NavigateThroughPoses_SendGoal
+  /navigate_through_poses/_action/cancel_goal  action_msgs/srv/CancelGoal
+  /navigate_through_poses/_action/get_result   nav2_msgs/action/NavigateThroughPoses_GetResult
+  /navigate_to_pose/_action/send_goal          nav2_msgs/action/NavigateToPose_SendGoal
+  /navigate_to_pose/_action/cancel_goal        action_msgs/srv/CancelGoal
+  /navigate_to_pose/_action/get_result         nav2_msgs/action/NavigateToPose_GetResult
+  /slam/get_parameters                         rcl_interfaces/srv/GetParameters
+  /slam/set_parameters                         rcl_interfaces/srv/SetParameters
+  /slam/set_parameters_atomically              rcl_interfaces/srv/SetParametersAtomically
+  /slam/describe_parameters                    rcl_interfaces/srv/DescribeParameters
+  /slam/get_parameter_types                    rcl_interfaces/srv/GetParameterTypes
+  /slam/list_parameters                        rcl_interfaces/srv/ListParameters
+  /slam/change_state                           lifecycle_msgs/srv/ChangeState
+  /slam/get_state                              lifecycle_msgs/srv/GetState
+  /slam/get_available_transitions              lifecycle_msgs/srv/GetAvailableTransitions
+  /amcl/get_parameters                         rcl_interfaces/srv/GetParameters
+  /amcl/set_parameters                         rcl_interfaces/srv/SetParameters
+  /amcl/set_parameters_atomically              rcl_interfaces/srv/SetParametersAtomically
+  /amcl/describe_parameters                    rcl_interfaces/srv/DescribeParameters
+  /amcl/get_parameter_types                    rcl_interfaces/srv/GetParameterTypes
+  /amcl/list_parameters                        rcl_interfaces/srv/ListParameters
+  /amcl/change_state                           lifecycle_msgs/srv/ChangeState
+  /amcl/get_state                              lifecycle_msgs/srv/GetState
+  /amcl/get_available_transitions              lifecycle_msgs/srv/GetAvailableTransitions
+  /localization_monitor/get_parameters         rcl_interfaces/srv/GetParameters
+  /localization_monitor/set_parameters         rcl_interfaces/srv/SetParameters
+  /localization_monitor/set_parameters_atomically rcl_interfaces/srv/SetParametersAtomically
+  /localization_monitor/describe_parameters    rcl_interfaces/srv/DescribeParameters
+  /localization_monitor/get_parameter_types    rcl_interfaces/srv/GetParameterTypes
+  /localization_monitor/list_parameters        rcl_interfaces/srv/ListParameters
+  /localization_monitor/change_state           lifecycle_msgs/srv/ChangeState
+  /localization_monitor/get_state              lifecycle_msgs/srv/GetState
+  /localization_monitor/get_available_transitions lifecycle_msgs/srv/GetAvailableTransitions
+  /goal_checker/get_parameters                 rcl_interfaces/srv/GetParameters
+  /goal_checker/set_parameters                 rcl_interfaces/srv/SetParameters
+  /goal_checker/set_parameters_atomically      rcl_interfaces/srv/SetParametersAtomically
+  /goal_checker/describe_parameters            rcl_interfaces/srv/DescribeParameters
+  /goal_checker/get_parameter_types            rcl_interfaces/srv/GetParameterTypes
+  /goal_checker/list_parameters                rcl_interfaces/srv/ListParameters
+  /goal_checker/change_state                   lifecycle_msgs/srv/ChangeState
+  /goal_checker/get_state                      lifecycle_msgs/srv/GetState
+  /goal_checker/get_available_transitions      lifecycle_msgs/srv/GetAvailableTransitions
+  /planner_server/get_parameters               rcl_interfaces/srv/GetParameters
+  /planner_server/set_parameters               rcl_interfaces/srv/SetParameters
+  /planner_server/set_parameters_atomically    rcl_interfaces/srv/SetParametersAtomically
+  /planner_server/describe_parameters          rcl_interfaces/srv/DescribeParameters
+  /planner_server/get_parameter_types          rcl_interfaces/srv/GetParameterTypes
+  /planner_server/list_parameters              rcl_interfaces/srv/ListParameters
+  /planner_server/change_state                 lifecycle_msgs/srv/ChangeState
+  /planner_server/get_state                    lifecycle_msgs/srv/GetState
+  /planner_server/get_available_transitions    lifecycle_msgs/srv/GetAvailableTransitions
+  /controller_server/get_parameters            rcl_interfaces/srv/GetParameters
+  /controller_server/set_parameters            rcl_interfaces/srv/SetParameters
+  /controller_server/set_parameters_atomically rcl_interfaces/srv/SetParametersAtomically
+  /controller_server/describe_parameters       rcl_interfaces/srv/DescribeParameters
+  /controller_server/get_parameter_types       rcl_interfaces/srv/GetParameterTypes
+  /controller_server/list_parameters           rcl_interfaces/srv/ListParameters
+  /controller_server/change_state              lifecycle_msgs/srv/ChangeState
+  /controller_server/get_state                 lifecycle_msgs/srv/GetState
+  /controller_server/get_available_transitions lifecycle_msgs/srv/GetAvailableTransitions
+  /behavior_server/get_parameters              rcl_interfaces/srv/GetParameters
+  /behavior_server/set_parameters              rcl_interfaces/srv/SetParameters
+  /behavior_server/set_parameters_atomically   rcl_interfaces/srv/SetParametersAtomically
+  /behavior_server/describe_parameters         rcl_interfaces/srv/DescribeParameters
+  /behavior_server/get_parameter_types         rcl_interfaces/srv/GetParameterTypes
+  /behavior_server/list_parameters             rcl_interfaces/srv/ListParameters
+  /behavior_server/change_state                lifecycle_msgs/srv/ChangeState
+  /behavior_server/get_state                   lifecycle_msgs/srv/GetState
+  /behavior_server/get_available_transitions   lifecycle_msgs/srv/GetAvailableTransitions
+  /collision_monitor/get_parameters            rcl_interfaces/srv/GetParameters
+  /collision_monitor/set_parameters            rcl_interfaces/srv/SetParameters
+  /collision_monitor/set_parameters_atomically rcl_interfaces/srv/SetParametersAtomically
+  /collision_monitor/describe_parameters       rcl_interfaces/srv/DescribeParameters
+  /collision_monitor/get_parameter_types       rcl_interfaces/srv/GetParameterTypes
+  /collision_monitor/list_parameters           rcl_interfaces/srv/ListParameters
+  /collision_monitor/change_state              lifecycle_msgs/srv/ChangeState
+  /collision_monitor/get_state                 lifecycle_msgs/srv/GetState
+  /collision_monitor/get_available_transitions lifecycle_msgs/srv/GetAvailableTransitions
+  /lifecycle_manager_navigation/get_parameters rcl_interfaces/srv/GetParameters
+  /lifecycle_manager_navigation/set_parameters rcl_interfaces/srv/SetParameters
+  /lifecycle_manager_navigation/set_parameters_atomically rcl_interfaces/srv/SetParametersAtomically
+  /lifecycle_manager_navigation/describe_parameters rcl_interfaces/srv/DescribeParameters
+  /lifecycle_manager_navigation/get_parameter_types rcl_interfaces/srv/GetParameterTypes
+  /lifecycle_manager_navigation/list_parameters rcl_interfaces/srv/ListParameters
+  /lifecycle_manager_navigation/manage_nodes   nav2_msgs/srv/ManageLifecycleNodes
+  /lifecycle_manager_navigation/is_active      std_srvs/srv/Trigger
+actions (2):
+  /navigate_through_poses                      nav2_msgs/action/NavigateThroughPoses
+  /navigate_to_pose                            nav2_msgs/action/NavigateToPose
+time per node (mapping + navigation):
+  /mission               1222 runs       11.9 ms   0.01 % of one core
+  /bt_navigator          1222 runs      749.3 ms   0.43 % of one core
+  /x4_driver             1222 runs     4068.1 ms   2.33 % of one core
+  /slam                  1222 runs    17365.4 ms   9.95 % of one core
+  /amcl                  1222 runs     2281.2 ms   1.31 % of one core
+  /localization_monitor    1222 runs     2971.8 ms   1.70 % of one core
+  /goal_checker           681 runs       19.2 ms   0.01 % of one core
+  /planner_server        1222 runs     3713.9 ms   2.13 % of one core
+  /controller_server     1222 runs     4146.1 ms   2.37 % of one core
+  /behavior_server        682 runs        3.9 ms   0.00 % of one core
+  /collision_monitor     1222 runs     1320.9 ms   0.76 % of one core
+  /judge                 1222 runs       96.8 ms   0.06 % of one core
+  /sim_base              1222 runs    58739.0 ms  33.65 % of one core
+  /lifecycle_manager_navigation       0 runs        0.0 ms   0.00 % of one core
+MISSION room spin seed 0 kidnap box | CORRECT | legs 4/4, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | resolved_by_turning(4 cand, err 0.02 m) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 2, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.026 m | max cycle 124 ms, search 1169 ms, multi update 102 ms (in 19 cycles, longest 119 ms)
+  (chip time 97 s)
+[k] s_corridor/spin seed 0: map done, SLAM error max 0.059 m, map walls 0.019 m from true walls on average (98.5 % within 5 cm)
+[k]   unmapped box placed at (3.6-4.2, 2.6-3.2)
+[k]   leg 1 END (7.2, 5.0): DONE | true distance 0.17 m
+[k]   leg 2 UNREACHABLE (4.0, 2.0): ABORT_GOAL_BLOCKED | true distance 4.21 m
+[k]   leg 3 START (0.8, 1.0): DONE | true distance 0.19 m
+[k]   kidnapped during leg 4 to (6.53, 1.39, -1.43)
+[k]   still 2 candidates after turning 15 s (true pose among them: yes): stop and ask for help
+[k]   leg 4 END (7.2, 5.0): STOPPED | true distance 3.75 m
+[k]   leg 5 START: NOT_RUN (waiting for help)
+[k]   leg 6 END: NOT_RUN (waiting for help)
+[k]   robot nodes: 28.9 % of one core while mapping, 15.5 % while navigating (1125 + 1183 cycles)
+MISSION s_corridor spin seed 0 kidnap box | STOPPED_SAFELY | legs 2/3, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | ambiguous_stopped(2->2, truth kept yes) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 1, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.019 m | max cycle 136 ms, search 1509 ms, multi update 63 ms (in 24 cycles, longest 130 ms)
+  (chip time 163 s)
+[k] s_corridor_lm/spin seed 0: map done, SLAM error max 0.039 m, map walls 0.018 m from true walls on average (99.8 % within 5 cm)
+[k]   unmapped box placed at (3.6-4.2, 2.6-3.2)
+[k]   leg 1 END (7.2, 5.0): DONE | true distance 0.17 m
+[k]   leg 2 UNREACHABLE (4.0, 2.0): ABORT_GOAL_BLOCKED | true distance 4.22 m
+[k]   leg 3 START (0.8, 1.0): DONE | true distance 0.20 m
+[k]   kidnapped during leg 4 to (6.53, 1.39, -1.43)
+[k]   relocalized: 2 candidates, resolved by turning, error 0.01 m (search 1483 ms)
+[k]   leg 4 END (7.2, 5.0): DONE | true distance 0.16 m
+[k]   leg 5 START (0.8, 1.0): DONE | true distance 0.19 m
+[k]   leg 6 END (7.2, 5.0): DONE | true distance 0.19 m
+[k]   robot nodes: 29.6 % of one core while mapping, 13.9 % while navigating (1195 + 2477 cycles)
+MISSION s_corridor_lm spin seed 0 kidnap box | CORRECT | legs 5/5, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | resolved_by_turning(2 cand, err 0.01 m) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 3, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.019 m | max cycle 136 ms, search 1483 ms, multi update 62 ms (in 24 cycles, longest 130 ms)
+  (chip time 240 s)
+[k] doors/spin seed 0: map done, SLAM error max 0.029 m, map walls 0.028 m from true walls on average (91.8 % within 5 cm)
+[k]   unmapped box placed at (5.0-5.4, 2.0-2.4)
+[k]   leg 1 THROUGH_DOOR (6.0, 1.5): DONE | true distance 0.17 m
+[k]   leg 2 UNREACHABLE (4.0, 1.0): ABORT_GOAL_BLOCKED | true distance 2.15 m
+[k]   kidnapped during leg 3 to (6.53, 1.39, -1.43)
+[k]   still 2 candidates after turning 15 s (true pose among them: yes): stop and ask for help
+[k]   leg 3 THROUGH_GAP (6.0, 5.2): STOPPED | true distance 3.91 m
+[k]   leg 4 BACK_LEFT: NOT_RUN (waiting for help)
+[k]   leg 5 DOCK: NOT_RUN (waiting for help)
+[k]   robot nodes: 29.1 % of one core while mapping, 19.7 % while navigating (824 + 387 cycles)
+MISSION doors spin seed 0 kidnap box | STOPPED_SAFELY | legs 1/2, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | ambiguous_stopped(9->2, truth kept yes) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 1, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.013 m | max cycle 133 ms, search 1509 ms, multi update 113 ms (in 24 cycles, longest 128 ms)
+  (chip time 96 s)
+[k] room_tilted/spin seed 0: map done, SLAM error max 0.056 m, map walls 0.015 m from true walls on average (92.4 % within 5 cm)
+[k]   unmapped box placed at (3.2-3.6, 3.6-4.4) (before turning)
+[k]   leg 1 A (6.8, 2.1): DONE | true distance 0.17 m
+[k]   leg 2 UNREACHABLE (3.4, 0.8): ABORT_GOAL_BLOCKED | true distance 3.48 m
+[k]   kidnapped during leg 3 to (6.81, 1.95, -1.43)
+[k]   relocalized: 5 candidates, resolved by turning, error 0.04 m (search 1218 ms)
+[k]   leg 3 B (6.3, 5.7): DONE | true distance 0.23 m
+[k]   leg 4 C (1.9, 4.9): DONE | true distance 0.20 m
+[k]   leg 5 DOCK (1.9, 1.0): DONE | true distance 0.17 m
+[k]   robot nodes: 28.9 % of one core while mapping, 14.8 % while navigating (543 + 657 cycles)
+MISSION room_tilted spin seed 0 kidnap box | CORRECT | legs 4/4, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | resolved_by_turning(5 cand, err 0.04 m) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 1, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.035 m | max cycle 124 ms, search 1218 ms, multi update 103 ms (in 19 cycles, longest 120 ms)
+  (chip time 87 s)
+SUMMARY room spin options 3: 1 runs | correct 1, stopped safely 0, incomplete 0, wrong-pose driving 0, contact 0
+SUMMARY s_corridor spin options 3: 1 runs | correct 0, stopped safely 1, incomplete 0, wrong-pose driving 0, contact 0
+SUMMARY s_corridor_lm spin options 3: 1 runs | correct 1, stopped safely 0, incomplete 0, wrong-pose driving 0, contact 0
+SUMMARY doors spin options 3: 1 runs | correct 0, stopped safely 1, incomplete 0, wrong-pose driving 0, contact 0
+SUMMARY room_tilted spin options 3: 1 runs | correct 1, stopped safely 0, incomplete 0, wrong-pose driving 0, contact 0
+memory after the run (everything freed): PSRAM 8141 KB free (before 8141 KB), internal 292 KB free (before 292 KB)
+RESULT mission: PASS (0 runs with wrong-pose driving or contacts) | total chip time 684 s
+
+commands: b board | l lidar 10 s | s lidar stream | p print one scan CSV | c compute benchmark | v virtual lidar | n virtual driving (n old: one loop) | k w m s o mission | K n m o batch (n/k/K ... old: one loop, ... bridge [rt] [hold]: topics to the PC tool, k ... gz: robot in Gazebo, tools/gzbridge.py) | m motor base | a all (b, c, l) | h help

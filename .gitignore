@@ -1,0 +1,13 @@
+# PlatformIO and builds
+firmware/.pio/
+firmware/test_host/*
+!firmware/test_host/*.cpp
+!firmware/test_host/*.sh
+__pycache__/
+*.pyc
+# run outputs
+results/*.bin
+results/*.csv
+firmware/gazebo/server.log
+firmware/updates/
+firmware/MANIFEST.sha256

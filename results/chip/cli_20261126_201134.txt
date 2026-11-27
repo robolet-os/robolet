@@ -1,0 +1,48 @@
+   [daemon] /dev/ttyACM0: sent 'k 0 1 0 3 rt hold bridge'
+   [daemon] chip: esp32ros-fw 0.14 (2026-11-26) | k 0 1 0 3 rt hold bridge
+   [daemon] serving the ros2 commands on 127.0.0.1:11811
+PASS node list | 15 nodes
+PASS node info /bt_navigator
+PASS topic list (hidden topics left out) | 39 topics
+PASS topic list -t
+PASS topic info /scan | Type: sensor_msgs/msg/LaserScan / Publisher count: 1 / Subscription count: 0
+PASS topic echo --once | header: / stamp: / sec: 2 / nanosec: 571428574
+PASS topic hz /scan (7 Hz) | average rate: 7.000 (message stamps) / min: 0.143s max: 0.143s std dev: 0.00000s window: 14
+PASS service list -t | 97 services
+PASS service type | rcl_interfaces/srv/GetParameters
+PASS service call
+PASS param list | /controller_server: / max_vel_x / use_sim_time
+PASS param get | Double value is: 0.3
+PASS param set | Double value is: 0.25
+PASS param set refused (out of range) | Setting parameter failed: value out of range
+PASS param set back
+PASS param describe
+PASS param dump
+PASS lifecycle nodes | 9 nodes
+PASS lifecycle get | active [3]
+PASS lifecycle list
+PASS lifecycle set deactivate / activate | inactive [2]
+PASS action list -t
+PASS action info
+PASS interface show
+PASS topic pub + echo | data: 42
+[cli] waiting for the mission's legs (then the robot waits for goals) ...
+   chip: [k] room/spin seed 0: map done, SLAM error max 0.049 m, map walls 0.017 m from true walls on average (93.1 % within 5 cm)
+   chip: [k]   unmapped box placed at (3.2-3.6, 3.6-4.4)
+   chip: [k]   leg 1 A (6.5, 1.5): DONE | true distance 0.17 m
+   chip: [k]   leg 2 UNREACHABLE (3.0, 1.0): ABORT_GOAL_BLOCKED | true distance 3.44 m
+   chip: [k]   kidnapped during leg 3 to (6.53, 1.39, -1.43)
+   chip: [k]   relocalized: 4 candidates, resolved by turning, error 0.02 m (search 1249 ms)
+   chip: [k]   leg 3 B (6.8, 5.2): DONE | true distance 0.21 m
+   chip: [k]   leg 4 C (2.3, 5.3): DONE | true distance 0.21 m
+   chip: [k]   leg 5 DOCK (1.5, 1.5): DONE | true distance 0.19 m
+   chip: [k]   legs over; holding: goals from the PC (navigate_to_pose) until /mission/stop
+PASS action send_goal (reached) | 66 feedback messages, distance left 0.39..9.78 m
+PASS action send_goal canceled with Ctrl+C | Canceling goal... return code 0
+PASS mission stop | the run ends
+   chip: [k]   robot nodes: 29.0 % of one core while mapping, 14.4 % while navigating (544 + 966 cycles)
+   chip: MISSION room spin seed 0 kidnap box | CORRECT | legs 4/4, unreachable handled yes | kidnap yes, detected after 0.29 s, false alarms 0 | resolved_by_turning(4 cand, err 0.02 m) | wrong-pose driving 0.0 s (+0.3 s before detection) | contacts 0 (0.0 s) | obstacle replans 3, collision stops 0, arc blocked 0, recoveries 0, aborts 0 | loc median 0.025 m | max cycle 1254 ms, search 1249 ms, multi update 102 ms
+   chip: RESULT mission: PASS (0 runs with wrong-pose driving or contacts) | total chip time 216 s
+   [daemon] the run is over
+PASS the run ended | chip: MISSION room spin seed 0 kidnap box | CORRECT | legs 4/4, unreachable handled yes | kidnap yes, detected
+RESULT cli: PASS (29 of 29 checks)

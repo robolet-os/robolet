@@ -1,0 +1,1 @@
+GoalStatus[] status_list

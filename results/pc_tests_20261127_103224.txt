@@ -1,0 +1,52 @@
+
+=== build
+built in /tmp/tmp.xEVV0QQlj2
+
+=== test_main: parts of the firmware that do not need the chip
+astar_opt: found=1 weighted length 8.42 m, expanded 4008 cells, 0.29 ms
+
+ALL PASSED
+--- PASS test_main
+
+=== test_bus: topics, executor, message conversions
+points -> sensor_msgs/PointCloud2 -> points: same (800 points, 9600 bytes)
+
+ALL PASSED
+--- PASS test_bus
+
+=== test_vlidar: virtual X4 -> parser -> scan matching
+revolutions matched 30/30 | packets ok 589 bad 0 | max wall dist 0.006 m | max error 0.034 m, 0.020 rad
+motion distortion (0.3 m/s, 1.0 rad/s): mean wall distance standing 0.0058 m | moving, no correction 0.0529 m | moving, deskew 0.0086 m
+ALL PASSED
+--- PASS test_vlidar
+
+=== test_nav: node version = single loop (virtual driving)
+seed 0: nodes PASS, single loop PASS | same results (0 differences) | PC run nodes 0.68 s, single loop 0.60 s
+seed 1: nodes PASS, single loop PASS | same results (0 differences) | PC run nodes 0.67 s, single loop 0.60 s
+RESULT nav: PASS, node version gives the same results as the single-loop version
+--- PASS test_nav
+
+=== check_cdr: the firmware's CDR = rosbags (an independent ROS 2 implementation)
+types given to rosbags from msg/ (it does not ship them): 40
+430 messages of 86 types: ALL SAME BYTES AS ROS 2 (rosbags)
+--- PASS check_cdr
+
+=== test_bridge + check_link: the bytes the chip sends to the PC
+bridge: 5285320 bytes to the PC in 1221 cycles (29.6 KB per second at real time)
+RESULT bridge: same mission result with and without the bridge
+last /map: 200 x 160, 1351 occupied, 18374 free, 12275 unknown
+last /amcl/robot_pose: {'x': 1.624, 'y': 1.644, 'z': 0.0}
+RESULT link: PASS
+--- PASS test_bridge
+
+=== test_real: real-robot mode ([r]) with a simulated Jarabot: keyboard mapping, two goals
+framer: 518 revolutions, 0 bad packets | arduino: 522 lines | contacts 0 | robot at (2.11, 4.91) | PC run 0.3 s
+RESULT real: PASS (goals reached 2 of 2, ends near goal 2: yes, contacts 0)
+--- PASS test_real
+
+=== node version = single loop: worlds 0 and 4, kidnap + unmapped box, seeds 0 1
+RESULT mission nodes: same as the single loop
+RESULT mission nodes: same as the single loop
+--- PASS test_mission_nodes
+
+PC tests: PASS

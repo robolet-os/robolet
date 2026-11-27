@@ -1,0 +1,58 @@
+# Fixed capacities for unbounded arrays and strings (the chip has no dynamic memory for messages).
+# <package>/<Type>.<field> <capacity>; strings default to 24 characters including the terminating zero.
+string 24
+sensor_msgs/LaserScan.ranges 720
+sensor_msgs/LaserScan.intensities 720
+sensor_msgs/PointCloud2.fields 3
+sensor_msgs/PointCloud2.data 9600
+nav_msgs/OccupancyGrid.data 32000
+nav_msgs/Path.poses 2000
+tf2_msgs/TFMessage.transforms 4
+geometry_msgs/PoseArray.poses 24
+# step 10: parameters, lifecycle, actions
+rcl_interfaces/ParameterValue.string_value:string 48
+rcl_interfaces/ParameterValue.byte_array_value 8
+rcl_interfaces/ParameterValue.bool_array_value 8
+rcl_interfaces/ParameterValue.integer_array_value 8
+rcl_interfaces/ParameterValue.double_array_value 8
+rcl_interfaces/ParameterValue.string_array_value 16
+rcl_interfaces/ParameterValue.string_array_value:string 40
+rcl_interfaces/Parameter.name:string 48
+rcl_interfaces/SetParametersResult.reason:string 64
+rcl_interfaces/ListParametersResult.names 24
+rcl_interfaces/ListParametersResult.names:string 48
+rcl_interfaces/ListParametersResult.prefixes 4
+rcl_interfaces/ListParametersResult.prefixes:string 48
+rcl_interfaces/srv/GetParameters_Request.names 24
+rcl_interfaces/srv/GetParameters_Request.names:string 48
+rcl_interfaces/srv/GetParameters_Response.values 24
+rcl_interfaces/srv/SetParameters_Request.parameters 8
+rcl_interfaces/srv/SetParameters_Response.results 8
+rcl_interfaces/srv/ListParameters_Request.prefixes 4
+rcl_interfaces/srv/ListParameters_Request.prefixes:string 48
+action_msgs/GoalStatusArray.status_list 4
+action_msgs/srv/CancelGoal_Response.goals_canceling 4
+std_srvs/srv/Trigger_Response.message:string 64
+nav2_msgs/action/NavigateToPose_Result.error_msg:string 48
+nav2_msgs/action/NavigateThroughPoses_Goal.poses 24
+nav2_msgs/action/NavigateThroughPoses_Result.error_msg:string 48
+# ros2 extras: describe / types / atomic parameters, /parameter_events, lifecycle transitions, /rosout
+rcl_interfaces/ParameterDescriptor.name:string 48
+rcl_interfaces/ParameterDescriptor.description:string 96
+rcl_interfaces/srv/DescribeParameters_Request.names 16
+rcl_interfaces/srv/DescribeParameters_Request.names:string 48
+rcl_interfaces/srv/DescribeParameters_Response.descriptors 16
+rcl_interfaces/srv/GetParameterTypes_Request.names 16
+rcl_interfaces/srv/GetParameterTypes_Request.names:string 48
+rcl_interfaces/srv/GetParameterTypes_Response.types 16
+rcl_interfaces/srv/SetParametersAtomically_Request.parameters 8
+rcl_interfaces/ParameterEvent.node:string 40
+rcl_interfaces/ParameterEvent.new_parameters 1
+rcl_interfaces/ParameterEvent.changed_parameters 8
+rcl_interfaces/ParameterEvent.deleted_parameters 1
+rcl_interfaces/Log.name:string 40
+rcl_interfaces/Log.msg:string 200
+lifecycle_msgs/srv/GetAvailableTransitions_Response.available_transitions 4
+# real robot through a relay (tools/relay.py): serial bytes of the lidar and the motor controller
+std_msgs/MultiArrayLayout.dim 2
+std_msgs/UInt8MultiArray.data 2048
