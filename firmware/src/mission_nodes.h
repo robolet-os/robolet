@@ -515,7 +515,7 @@ struct MPlanner : ros::Node {
     if (skip) return;
     if (map_dirty) { occ_from_map(*map->last, occ); bc::distance_field(occ, dist); bc::costmap(dist, cost); pad_cost(dist, cost); map_dirty = false; }
     if (st == LOC_HEALTHY) {                                       // live obstacle layer
-      float c = cosf(e.th), sn = sinf(e.th); static int idxs[MAXPTS]; int nn = 0;
+      float c = fcos(e.th), sn = fsin(e.th); static int idxs[MAXPTS]; int nn = 0;
       for (int k = 0; k < m; k++) {
         if (px[k] * px[k] + py[k] * py[k] > 1.5f * 1.5f) continue;
         int i = bc::cx(e.x + c * px[k] - sn * py[k]), j = bc::cy(e.y + sn * px[k] + c * py[k]);
@@ -619,7 +619,7 @@ struct MController : ros::Node {
         for (int iv = 1; iv <= 2; iv++) for (int iw = -4; iw <= 4; iw++) {
           float cv = 0.05f * iv, cw = 0.15f * iw;
           if (arc_hits(px, py, m, cv, cw, cv * 1.0f + 0.02f)) continue;
-          float th = e.th + cw * 0.5f, ex2 = e.x + cv * cosf(th), ey2 = e.y + cv * sinf(th);
+          float th = e.th + cw * 0.5f, ex2 = e.x + cv * fcos(th), ey2 = e.y + cv * fsin(th);
           float sc = hypotf(w.path_x[q] - ex2, w.path_y[q] - ey2);
           if (sc < best) { best = sc; bv = cv; bw = cw; }
         }

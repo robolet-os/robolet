@@ -5,6 +5,7 @@ old project name (esp32ros).
 
 | File | Firmware | Run |
 |---|---|---|
+| `chip_20261128_212616.txt` | after 0.16 | `bash test.sh nobuild`: board, compute benchmark, virtual lidar, virtual driving with the sine/cosine table (`src/fast_trig.h`); sin + cos pair 1.57 µs (C library) -> 0.62 µs (table) |
 | `chip_20261127_070423.txt` | 0.16 | `bash test.sh lostquick`: 5 worlds, kidnapping + unmapped box; candidate check while turning spread over cycles (the measurements in the README) |
 | `chip_20261127_001217.txt` | 0.15 | the same, candidate check while turning in one cycle |
 | `chip_20261126_234433.txt` | 0.14 | the same, global search in one cycle |

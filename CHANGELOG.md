@@ -2,6 +2,10 @@
 
 The project was called esp32ros up to 0.15.
 
+## Unreleased
+- `src/fast_trig.h`: sine and cosine from a quarter-wave table that the compiler builds (`constexpr`) and that stays in flash (513 floats, 2052 bytes, linear interpolation; largest error below 2e-6). Used in scan matching, the particle filter, pose composition, path tracking and the kidnap/relocalization code; the simulator (virtual lidar, true robot motion) keeps the C library. Suggested by u/Plastic_Fig9225 (Reddit); written independently for this project.
+- `test_host/test_trig.cpp` (in `run_pc_tests.sh`): accuracy of the table against the C library. The compute benchmark `c` prints the time of one sin + cos pair on the chip for both: C library 1.57 µs, table 0.62 µs (ESP32-S3, 240 MHz; `results/chip/chip_20261128_212616.txt`).
+
 ## 0.16 (2026-11-27)
 - Renamed to Robolet (firmware `robolet-fw`, PC library `tools/robolet.py`, environment variable `ROBOLET_DAEMON_PORT`).
 - Relocalization: the check of the candidates while turning is spread over cycles (`relocalization_hyps_per_cycle`, default 4), so it no longer takes 239 ms in one cycle with 9 candidates. Chip (`lostquick`, 5 worlds): longest cycle 244 → 133 ms in the doors world, 124–136 ms in all five.

@@ -143,7 +143,7 @@ inline int world_legs(int world, Leg* L) {
 // ---------------------------------------------------------------- beam model on the SLAM occupancy grid
 // expected range along world angle a: first occupied cell (half-cell steps from 0.1 m); leaving the grid counts as a hit
 inline float ray_occ(const uint8_t* occ, float x, float y, float a) {
-  float c = cosf(a), s = sinf(a);
+  float c = fcos(a), s = fsin(a);
   float fx = (x - OX) * INV_RES + 0.1f * INV_RES * c, fy = (y - OY) * INV_RES + 0.1f * INV_RES * s;
   for (int k = 0; k < 396; k++, fx += 0.5f * c, fy += 0.5f * s) {
     float r = 0.1f + k * 0.025f;
@@ -168,7 +168,7 @@ inline void beam_check(const uint8_t* occ, Pose p, const float* px, const float*
   lf = cnt ? (float)far / cnt : 1; mf = cnt ? (float)ok / cnt : 0;
 }
 inline int fit_filter(const uint8_t* dist, Pose p, const float* px, const float* py, int n, float* qx, float* qy) {
-  float c = cosf(p.th), s = sinf(p.th); int m = 0;
+  float c = fcos(p.th), s = fsin(p.th); int m = 0;
   for (int k = 0; k < n; k++) {
     int i = bc::cx(p.x + c * px[k] - s * py[k]), j = bc::cy(p.y + s * px[k] + c * py[k]);
     if (i < 0 || i >= W || j < 0 || j >= H) continue;
@@ -200,7 +200,7 @@ inline void search_begin(Search& S, const float* px, const float* py, int n) {
   int sub = n / 60; if (sub < 1) sub = 1;
   S.m = 0;
   for (int k = 0; k < n && S.m < 128; k += sub) { S.sx[S.m] = px[k] * INV_RES; S.sy[S.m] = py[k] * INV_RES; S.m++; }
-  for (int t = 0; t < 36; t++) { float a = -3.14159265f + t * 6.2831853f / 36; S.hc[t] = cosf(a); S.hs[t] = sinf(a); }
+  for (int t = 0; t < 36; t++) { float a = -3.14159265f + t * 6.2831853f / 36; S.hc[t] = fcos(a); S.hs[t] = fsin(a); }
   S.phase = 0; S.j = 0; S.nc = 0; S.nk = 0; S.nr = 0; S.r = 0; S.ng = 0; S.best = 0;
 }
 // pass 1 rows (every 3rd row of the map) in the search
@@ -284,7 +284,7 @@ inline bool arc_hits(const float* px, const float* py, int m, float v, float w, 
   const float rr = rad * rad;
   float x = 0, y = 0, th = 0, s = 0;
   for (int st = 0; st < 40 && s < smax; st++) {
-    float dt = 0.05f; th += w * dt * 0.5f; x += v * dt * cosf(th); y += v * dt * sinf(th); th += w * dt * 0.5f; s += fabsf(v) * dt;
+    float dt = 0.05f; th += w * dt * 0.5f; x += v * dt * fcos(th); y += v * dt * fsin(th); th += w * dt * 0.5f; s += fabsf(v) * dt;
     for (int k = 0; k < m; k++) {
       float dx = px[k] - x, dy = py[k] - y, d = dx * dx + dy * dy;
       if (d < rr) {
@@ -513,7 +513,7 @@ inline MResult run_mission(MWork& mw, const Hooks& h, int world, int mode, uint3
       if (hypotf(L.x - e.x, L.y - e.y) < 0.2f) { state = "DONE"; break; }
       // ---- live obstacle layer: mark unmapped points near the robot while the pose is healthy
       if (healthy) {
-        float c = cosf(e.th), sn = sinf(e.th); int idxs[MAXPTS]; int nn = 0;
+        float c = fcos(e.th), sn = fsin(e.th); int idxs[MAXPTS]; int nn = 0;
         for (int k = 0; k < m; k++) {
           if (w.px[k] * w.px[k] + w.py[k] * w.py[k] > 1.5f * 1.5f) continue;
           int i = bc::cx(e.x + c * w.px[k] - sn * w.py[k]), j = bc::cy(e.y + sn * w.px[k] + c * w.py[k]);
@@ -571,7 +571,7 @@ inline MResult run_mission(MWork& mw, const Hooks& h, int world, int mode, uint3
             for (int iv = 1; iv <= 2; iv++) for (int iw = -4; iw <= 4; iw++) {
               float cv = 0.05f * iv, cw = 0.15f * iw;
               if (arc_hits(w.px, w.py, m, cv, cw, cv * 1.0f + 0.02f)) continue;
-              float th = e.th + cw * 0.5f, ex2 = e.x + cv * cosf(th), ey2 = e.y + cv * sinf(th);   // pose after 1 s
+              float th = e.th + cw * 0.5f, ex2 = e.x + cv * fcos(th), ey2 = e.y + cv * fsin(th);   // pose after 1 s
               float sc = hypotf(w.path_x[q] - ex2, w.path_y[q] - ey2);
               if (sc < best) { best = sc; bv = cv; bw = cw; }
             }

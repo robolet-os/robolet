@@ -11,6 +11,7 @@ bash test_host/run_pc_tests.sh full     # about 30 minutes
 | Test | Checks |
 |---|---|
 | `test_main`, `test_bus`, `test_vlidar` | firmware parts, topics and executor, virtual X4 → parser → scan matching |
+| `test_trig` | table sine/cosine (`fast_trig.h`) against the C library: largest error below 2e-6 over -20..20 rad |
 | `test_nav` | node version of the virtual driving = single-loop version, every result number |
 | `check_cdr` | the firmware's CDR bytes = `rosbags` (an independent ROS 2 implementation) for all 86 message, service and action types |
 | `test_bridge` + `check_link` | the mission result is the same with the bridge; the bytes for the PC decode correctly |

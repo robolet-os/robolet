@@ -1,0 +1,103 @@
+
+=== [b] board check ===
+firmware robolet-fw 0.16 (2026-11-27), built Nov 28 2026 21:23:00 | PlatformIO espressif32 6.13.0, Arduino core 2.0.17, ESP-IDF v4.4.7-dirty
+chip ESP32-S3 rev 0, 2 cores, CPU 240 MHz
+last restart: power on
+flash 16 MB | PSRAM found, 8189 KB (free 8141 KB) | internal heap free 282 KB, largest block 247 KB
+PSRAM 4 MB pattern test: 0 errors, write 33.3 MB/s, read+check 52.4 MB/s
+RESULT board: PASS (expects flash >= 16 MB and PSRAM >= 8 MB for N16R8)
+
+he PC: tools/ros2.py daemon --chip r) | a all (b, c, l) | h help
+
+=== [c] compute benchmark v2 (8 x 6 m map, 5 cm cells, CPU 240 MHz, one core) ===
+[SRAM ] map build (distance+likelihood+costmap, 32000 cells): 11.21 ms
+[SRAM ] ray cast 720 beams: v1 74.51 ms -> v2 14.88 ms (61177 lookups, 292 -> 58 cycles/lookup), 0 beams differ
+[SRAM ] scan match naive 125 poses x 720 pts: 111.91 ms, 298.4 cycles/lookup, pose correct
+[SRAM ] scan match fast  125 poses x 720 pts: 13.84 ms, 36.9 cycles/lookup, pose correct
+[SRAM ] AMCL 600 particles x 60 beams: v1 85.58 ms -> v2 9.72 ms (571 -> 65 cycles/lookup), best particle same, max weight diff 0.0000
+[PSRAM] map build (distance+likelihood+costmap, 32000 cells): 13.30 ms
+[PSRAM] ray cast 720 beams: v1 74.65 ms -> v2 14.87 ms (61177 lookups, 293 -> 58 cycles/lookup), 0 beams differ
+[PSRAM] scan match naive 125 poses x 720 pts: 111.94 ms, 298.5 cycles/lookup, pose correct
+[PSRAM] scan match fast  125 poses x 720 pts: 13.84 ms, 36.9 cycles/lookup, pose correct
+[PSRAM] AMCL 600 particles x 60 beams: v1 85.62 ms -> v2 9.76 ms (571 -> 65 cycles/lookup), best particle same, max weight diff 0.0000
+[PSRAM] A* (1,1)->(7,5): v1 89.82 ms -> v2 20.61 ms | length v1 8.42 m, v2 8.42 m (same) | expanded 4009 / 4008 cells
+sin + cos pair: C library 1.57 us -> table in flash 0.62 us (table 2052 bytes, largest difference 1.3e-06, sums -12413.4 / -12413.4)
+load (7 scan matches/s + 2 AMCL/s + 1 A*/s), % of one core: v1 SRAM 35.8 / PSRAM 35.8  ->  v2 SRAM 13.7 / PSRAM 13.7
+  v2 breakdown (PSRAM): scan match 9.7 %, AMCL 2.0 %, A* 2.1 %
+(tools/chip_budget.py estimated about 12 % for the S3 by counting operations)
+RESULT compute: done (all lines must say 'pose correct', 'same', and 0 beams differ)
+
+| s lidar stream | p print one scan CSV | c compute benchmark | v virtual lidar | n virtual driving (n old: one loop) | k w m s o mission | K n m o batch (n/k/K ... old: one loop, ... bridge [rt] [hold]: topics to the PC tool, k ... gz: robot in Gazebo, tools/gzbridge.py) | m motor base (m go: without asking) | r real robot (from the PC: tools/ros2.py daemon --chip r) | a all (b, c, l) | h help
+
+=== [v] virtual lidar: simulated X4 byte stream -> parser -> scan matching (30 revolutions) ===
+transport: no jumper found: bytes are handed to the parser inside the chip (connect TX->RX for the UART test)
+  rev  0: 721 pts (708 valid) | points-to-wall 0.004 m | estimate (1.49, 1.52, -0.010) truth (1.50, 1.50, 0.000) error 0.022 m 0.010 rad
+  rev  1: 721 pts (705 valid) | points-to-wall 0.004 m | estimate (1.54, 1.52, 0.020) truth (1.53, 1.51, 0.020) error 0.011 m 0.000 rad
+  rev 29: 721 pts (707 valid) | points-to-wall 0.005 m | estimate (2.39, 1.92, 0.590) truth (2.37, 1.93, 0.580) error 0.025 m 0.010 rad
+bytes sent 50592, received 50592 | packets ok 589, checksum errors 0, skipped bytes 0
+revolutions matched 30/30 | max points-to-wall 0.006 m | max tracking error 0.034 m, 0.020 rad (scan-match grid 0.05 m / 0.03 rad)
+time per revolution: generate 40.7 ms, convert+match 14.9 ms | whole run 1.78 s = 16.8 revolutions/s
+RESULT vlidar: PASS (inside the chip)
+
+ l lidar 10 s | s lidar stream | p print one scan CSV | c compute benchmark | v virtual lidar | n virtual driving (n old: one loop) | k w m s o mission | K n m o batch (n/k/K ... old: one loop, ... bridge [rt] [hold]: topics to the PC tool, k ... gz: robot in Gazebo, tools/gzbridge.py) | m motor base (m go: without asking) | r real robot (from the PC: tools/ros2.py daemon --chip r) | a all (b, c, l) | h help
+
+=== [n] virtual driving: SLAM mapping, then AMCL + A* + pure pursuit to 4 goals (about 1-2 minutes), nodes and topics ===
+[map] tour of 11 waypoints, 405 path points; SLAM: odometry + coarse/fine scan matching + log-odds map
+[map] t= 20.0 s  driven 4.7 m  keyframes 57  SLAM error 0.010 m 0.002 rad
+[map] t= 40.0 s  driven 9.6 m  keyframes 110  SLAM error 0.031 m 0.003 rad
+[map] t= 60.0 s  driven 15.0 m  keyframes 160  SLAM error 0.020 m 0.000 rad
+[map] done: 540 cycles (77.1 s), 19.7 m driven, 199 keyframes | SLAM error max 0.046 m 0.012 rad, final 0.006 m
+[map] map: 1378 occupied cells, mean distance to true wall 0.027 m, 94.0 % within 5 cm
+[nav] AMCL 500 particles + A* on the inflated SLAM costmap (1 Hz replanning) + pure pursuit, 4 goals
+[nav] goal 1 (6.5, 1.5): reached after 31.1 s | true position (6.43, 1.64), true distance to goal 0.16 m
+[nav] goal 2 (6.8, 5.2): reached after 15.0 s | true position (6.73, 5.01), true distance to goal 0.20 m
+[nav] goal 3 (2.3, 5.3): reached after 17.1 s | true position (2.52, 5.23), true distance to goal 0.23 m
+[nav] goal 4 (1.5, 1.5): reached after 16.1 s | true position (1.64, 1.64), true distance to goal 0.20 m
+[map] time per cycle: parse 3.3 ms, scan matching 23.9 ms (max 24.2), map update 19.1 ms per keyframe (max 20.1) -> 27.7 % of one core
+[nav] goals reached 4/4 (unreachable 0) in 79.4 s, true distance at arrival max 0.23 m | AMCL updates 109, localization error median 0.025 m, max 0.050 m, 0.024 rad
+[nav] time: AMCL update 15.2 ms (max 15.3), A* plan 5.6 ms (max 23.5), control 0.10 ms -> 5.2 % of one core
+[all] contacts 0, minimum clearance 0.450 m (robot radius 0.18 m)
+nodes (9):
+  /bt_navigator  pub: /navigator/phase /plan /goal_pose /initialpose  sub: /controller_server/result /goal_checker/reached /planner_server/result /pose /ground_truth
+  /x4_driver  pub: /scan /scan_cloud  sub: /odom
+  /slam  pub: /parameter_events /map /pose /tf  sub: /navigator/phase /odom /scan_cloud
+  /amcl  pub: /parameter_events /amcl_pose /amcl/robot_pose /tf  sub: /navigator/phase /map /odom /initialpose /scan_cloud
+  /goal_checker  pub: /goal_checker/reached  sub: /goal_pose /amcl/robot_pose
+  /planner_server  pub: /plan /planner_server/result  sub: /map /goal_pose /goal_checker/reached /amcl/robot_pose
+  /controller_server  pub: /cmd_vel /controller_server/result  sub: /navigator/phase /map /goal_pose /plan /goal_checker/reached /planner_server/result /pose /amcl/robot_pose
+  /judge  pub:  sub: /ground_truth /pose /amcl/robot_pose
+  /sim_base  pub: /odom /ground_truth /tf  sub: /navigator/phase /cmd_vel
+topics (18):
+  /navigator/phase           std_msgs/msg/Int32                       1 pub 4 sub |      3 msgs   0.01 Hz | 4 B x 1 latched
+  /plan                      nav_msgs/msg/Path                        2 pub 1 sub |     83 msgs   0.52 Hz | 176040 B x 1
+  /goal_pose                 geometry_msgs/msg/PoseStamped            1 pub 3 sub |      4 msgs   0.05 Hz | 88 B x 1
+  /initialpose               geometry_msgs/msg/PoseWithCovarianceStamped 1 pub 1 sub |      1 msgs   0.00 Hz | 376 B x 1
+  /controller_server/result  std_msgs/msg/Int32                       1 pub 1 sub |      1 msgs   0.00 Hz | 4 B x 1
+  /goal_checker/reached      std_msgs/msg/Int32                       1 pub 3 sub |      4 msgs   0.06 Hz | 4 B x 1
+  /planner_server/result     std_msgs/msg/Int32                       1 pub 2 sub |      0 msgs   0.00 Hz | 4 B x 1
+  /pose                      geometry_msgs/msg/PoseWithCovarianceStamped 1 pub 3 sub |    541 msgs   7.00 Hz | 376 B x 1
+  /ground_truth              nav_msgs/msg/Odometry                    1 pub 2 sub |   1103 msgs   7.01 Hz | 736 B x 1
+  /odom                      nav_msgs/msg/Odometry                    1 pub 3 sub |   1103 msgs   7.01 Hz | 736 B x 1
+  /scan                      sensor_msgs/msg/LaserScan                1 pub 0 sub |      0 msgs   0.00 Hz | 5828 B x 1
+  /scan_cloud                sensor_msgs/msg/PointCloud2              1 pub 2 sub |   1102 msgs   7.00 Hz | 9772 B x 1
+  /parameter_events          rcl_interfaces/msg/ParameterEvent        2 pub 0 sub |      0 msgs   0.00 Hz | 9432 B x 1
+  /map                       nav_msgs/msg/OccupancyGrid               1 pub 3 sub |    199 msgs   2.58 Hz | 32120 B x 1 latched
+  /tf                        tf2_msgs/msg/TFMessage                   3 pub 0 sub |   2204 msgs  14.01 Hz | 456 B x 4
+  /amcl_pose                 geometry_msgs/msg/PoseWithCovarianceStamped 1 pub 0 sub |    109 msgs   1.37 Hz | 376 B x 1
+  /amcl/robot_pose           geometry_msgs/msg/PoseStamped            1 pub 4 sub |    560 msgs   7.00 Hz | 88 B x 1
+  /cmd_vel                   geometry_msgs/msg/Twist                  1 pub 1 sub |   1096 msgs   6.97 Hz | 48 B x 1
+time per node (mapping + navigation):
+  /bt_navigator          1102 runs       17.4 ms   0.01 % of one core
+  /x4_driver             1102 runs     3610.9 ms   2.29 % of one core
+  /slam                  1102 runs    17409.8 ms  11.06 % of one core
+  /amcl                  1102 runs     1818.3 ms   1.16 % of one core
+  /goal_checker           560 runs       16.3 ms   0.01 % of one core
+  /planner_server         759 runs      486.3 ms   0.31 % of one core
+  /controller_server     1102 runs     2240.6 ms   1.42 % of one core
+  /judge                 1102 runs       50.5 ms   0.03 % of one core
+  /sim_base              1102 runs    55259.2 ms  35.10 % of one core
+whole run on the chip: 81.2 s (of which the virtual lidar itself takes about 47 ms per revolution)
+memory after the run (everything freed): PSRAM 8141 KB free (before 8141 KB), internal 282 KB free (before 282 KB)
+RESULT nav: PASS (SLAM error < 0.10 m, map wall error < 0.05 m, all goals within 0.25 m, localization error < 0.20 m, no contacts) | load: mapping 27.7 %, navigation 5.2 % of one core
+
+commands: b board | l lidar 10 s | s lidar stream | p print one scan CSV | c compute benchmark | v virtual lidar | n virtual driving (n old: one loop) | k w m s o mission | K n m o batch (n/k/K ... old: one loop, ... bridge [rt] [hold]: topics to the PC tool, k ... gz: robot in Gazebo, tools/gzbridge.py) | m motor base (m go: without asking) | r real robot (from the PC: tools/ros2.py daemon --chip r) | a all (b, c, l) | h help

@@ -17,10 +17,11 @@ python3 tools/gen_msgs.py >/dev/null || exit 1
 build() { g++ -O2 -std=c++17 -Isrc "test_host/$1.cpp" -o "$B/$2" ${3:-} || { echo "build of $1 failed"; exit 1; }; }
 step "build"
 build test_main t; build test_bus tb; build test_vlidar tv; build test_nav tn; build test_cdr tcdr
-build test_bridge tbr -pthread; build test_mission_nodes tmn; build test_gz tgz "-pthread -lutil"; build test_real treal
+build test_trig ttr; build test_bridge tbr -pthread; build test_mission_nodes tmn; build test_gz tgz "-pthread -lutil"; build test_real treal
 echo "built in $B"
 
 step "test_main: parts of the firmware that do not need the chip";     "$B/t" | tail -3; check ${PIPESTATUS[0]} test_main
+step "test_trig: table sine/cosine against the C library";               "$B/ttr" | tail -5; check ${PIPESTATUS[0]} test_trig
 step "test_bus: topics, executor, message conversions";                "$B/tb" | tail -3; check ${PIPESTATUS[0]} test_bus
 step "test_vlidar: virtual X4 -> parser -> scan matching";             "$B/tv" | tail -3; check ${PIPESTATUS[0]} test_vlidar
 step "test_nav: node version = single loop (virtual driving)";        "$B/tn" 0 1 | tail -3; check ${PIPESTATUS[0]} test_nav

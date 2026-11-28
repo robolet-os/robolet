@@ -375,6 +375,17 @@ static void test_compute() {
   } else Con.println("A* allocation failed");
   heap_caps_free(occ); heap_caps_free(dist); heap_caps_free(cost); heap_caps_free(fbuf);
   heap_caps_free(wk.g); heap_caps_free(wk.heap); heap_caps_free(wk.pos); heap_caps_free(wk.state);
+  {  // sine + cosine: C library against the table in flash (src/fast_trig.h)
+    const int NT = 200000; float acc = 0, err = 0;
+    int64_t t0 = esp_timer_get_time();
+    for (int i = 0; i < NT; i++) { float x = (i & 0xFFFF) * 1.0e-4f - 3.2f; acc += sinf(x) + cosf(x); }
+    int64_t t1 = esp_timer_get_time(); float lib_sum = acc; acc = 0;
+    for (int i = 0; i < NT; i++) { float x = (i & 0xFFFF) * 1.0e-4f - 3.2f, s, c; fsincos(x, s, c); acc += s + c; }
+    int64_t t2 = esp_timer_get_time();
+    for (int i = 0; i < 65536; i++) { float x = i * 1.0e-4f - 3.2f, s, c; fsincos(x, s, c); float d = fabsf(s - sinf(x)); if (d > err) err = d; d = fabsf(c - cosf(x)); if (d > err) err = d; }
+    Con.printf("sin + cos pair: C library %.2f us -> table in flash %.2f us (table %u bytes, largest difference %.1e, sums %.1f / %.1f)\n",
+               (t1 - t0) / (double)NT, (t2 - t1) / (double)NT, (unsigned)sizeof(ftrig::TAB), err, lib_sum, acc);
+  }
   // Steady-state load with the simulator's rates: scan match at 7 scans/s, AMCL 2 updates/s, A* 1 plan/s
   double v1_i = (7 * bi.csm_fast + 2 * bi.amcl + as_ms) / 10.0, v1_p = (7 * bp.csm_fast + 2 * bp.amcl + as_ms) / 10.0;
   double v2_i = (7 * bi.csm_fast + 2 * bi.amcl_opt + as2_ms) / 10.0, v2_p = (7 * bp.csm_fast + 2 * bp.amcl_opt + as2_ms) / 10.0;

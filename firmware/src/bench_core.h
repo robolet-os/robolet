@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
+#include "fast_trig.h"
 
 namespace bc {
 
@@ -134,7 +135,7 @@ inline MatchResult csm_fast(const uint8_t* lik, const float* px, const float* py
   MatchResult r = {g, 0, 0};
   int step = (int)lroundf(dxy / RES), half = nxy / 2, gi = cx(g.x), gj = cy(g.y);
   for (int t = 0; t < nth; t++) {
-    float th = g.th + (t - nth / 2) * dth, c = cosf(th), s = sinf(th);
+    float th = g.th + (t - nth / 2) * dth, c = fcos(th), s = fsin(th);
     int m = 0;
     for (int k = 0; k < n; k++) {
       int i = cx(g.x + c * px[k] - s * py[k]) - gi, j = cy(g.y + s * px[k] + c * py[k]) - gj;
@@ -163,7 +164,7 @@ inline uint32_t amcl_weights(const uint8_t* lik, const float* px, const float* p
   int stride = n / nb; if (stride < 1) stride = 1;
   uint32_t lookups = 0;
   for (int p = 0; p < np; p++) {
-    float c = cosf(parts[p].th), s = sinf(parts[p].th), lw = 0.0f;
+    float c = fcos(parts[p].th), s = fsin(parts[p].th), lw = 0.0f;
     for (int k = 0; k < n; k += stride) {
       int i = cx(parts[p].x + c * px[k] - s * py[k]), j = cy(parts[p].y + s * px[k] + c * py[k]);
       float z = (i >= 0 && i < W && j >= 0 && j < H) ? lik[j * W + i] / 255.0f : 0.0f;
@@ -248,7 +249,7 @@ inline uint32_t amcl_weights_opt(const uint8_t* lik, const float* px, const floa
   for (int k = 0; k < n && m < 256; k += stride) { sx[m] = px[k] * INV_RES; sy[m] = py[k] * INV_RES; m++; }
   uint32_t lookups = 0;
   for (int p = 0; p < np; p++) {
-    float c = cosf(parts[p].th), s = sinf(parts[p].th), lw = 0.0f;
+    float c = fcos(parts[p].th), s = fsin(parts[p].th), lw = 0.0f;
     float fx0 = (parts[p].x - OX) * INV_RES, fy0 = (parts[p].y - OY) * INV_RES;
     for (int k = 0; k < m; k++) {
       float fx = fx0 + c * sx[k] - s * sy[k], fy = fy0 + s * sx[k] + c * sy[k];

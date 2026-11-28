@@ -59,9 +59,9 @@ struct Result {
 
 // ---------------------------------------------------------------- helpers
 inline float wrap(float a) { while (a > 3.14159265f) a -= 6.2831853f; while (a < -3.14159265f) a += 6.2831853f; return a; }
-inline Pose oplus(Pose a, Pose d) { float c = cosf(a.th), s = sinf(a.th); return {a.x + c * d.x - s * d.y, a.y + s * d.x + c * d.y, wrap(a.th + d.th)}; }
+inline Pose oplus(Pose a, Pose d) { float c = fcos(a.th), s = fsin(a.th); return {a.x + c * d.x - s * d.y, a.y + s * d.x + c * d.y, wrap(a.th + d.th)}; }
 inline Pose ominus(Pose a, Pose b) {   // b expressed in frame a
-  float c = cosf(a.th), s = sinf(a.th), dx = b.x - a.x, dy = b.y - a.y;
+  float c = fcos(a.th), s = fsin(a.th), dx = b.x - a.x, dy = b.y - a.y;
   return {c * dx + s * dy, -s * dx + c * dy, wrap(b.th - a.th)};
 }
 inline float gauss(x4sim::Rng& r) {
@@ -118,7 +118,7 @@ inline int scan_points(const Robot& rb, const ScanBuf& scan, float* px, float* p
 
 // ---------------------------------------------------------------- SLAM
 inline void slam_insert(int8_t* lo, Pose p, const float* px, const float* py, int n) {
-  float c = cosf(p.th), s = sinf(p.th);
+  float c = fcos(p.th), s = fsin(p.th);
   int ri = bc::cx(p.x), rj = bc::cy(p.y);
   for (int k = 0; k < n; k++) {
     int hi = bc::cx(p.x + c * px[k] - s * py[k]), hj = bc::cy(p.y + s * px[k] + c * py[k]);
@@ -139,7 +139,7 @@ inline void slam_rebuild(Work& w) {
 inline Pose match_fine(const uint8_t* lik, const float* px, const float* py, int n, Pose g) {
   Pose best = g; uint32_t bs = 0;
   for (int t = -2; t <= 2; t++) {
-    float th = g.th + t * 0.0075f, c = cosf(th), s = sinf(th);
+    float th = g.th + t * 0.0075f, c = fcos(th), s = fsin(th);
     for (int u = -2; u <= 2; u++) for (int v = -2; v <= 2; v++) {
       float x0 = (g.x + u * 0.0125f - OX) * INV_RES, y0 = (g.y + v * 0.0125f - OY) * INV_RES; uint32_t sc = 0;
       for (int k = 0; k < n; k += 2) {
@@ -167,7 +167,7 @@ struct Amcl {
       float r1 = rot1 - sqrtf(a1 * rot1 * rot1 + a2 * trans * trans) * gauss(rng);
       float tr = trans - sqrtf(a3 * trans * trans + a4 * (rot1 * rot1 + rot2 * rot2)) * gauss(rng);
       float r2 = rot2 - sqrtf(a1 * rot2 * rot2 + a2 * trans * trans) * gauss(rng);
-      p[i].x += tr * cosf(p[i].th + r1); p[i].y += tr * sinf(p[i].th + r1); p[i].th = wrap(p[i].th + r1 + r2);
+      p[i].x += tr * fcos(p[i].th + r1); p[i].y += tr * fsin(p[i].th + r1); p[i].th = wrap(p[i].th + r1 + r2);
     }
   }
   Pose measure(const uint8_t* lik, const float* px, const float* py, int m) {
@@ -175,7 +175,7 @@ struct Amcl {
     float mx = w[0]; for (int i = 1; i < n; i++) if (w[i] > mx) mx = w[i];
     float sum = 0; for (int i = 0; i < n; i++) { w[i] = expf(w[i] - mx); sum += w[i]; }
     float sx = 0, sy = 0, sc = 0, ss = 0;
-    for (int i = 0; i < n; i++) { w[i] /= sum; sx += w[i] * p[i].x; sy += w[i] * p[i].y; sc += w[i] * cosf(p[i].th); ss += w[i] * sinf(p[i].th); }
+    for (int i = 0; i < n; i++) { w[i] /= sum; sx += w[i] * p[i].x; sy += w[i] * p[i].y; sc += w[i] * fcos(p[i].th); ss += w[i] * fsin(p[i].th); }
     Pose mean = {sx, sy, atan2f(ss, sc)};
     // low-variance resampling (every update, like Nav2 resample_interval 1)
     float r = (rng.next() & 0xFFFFFF) / 16777216.0f / n, c = w[0]; int i = 0;
@@ -218,7 +218,7 @@ inline void pursue(Pose e, const float* X, const float* Y, int n, int& idx, floa
   v = vmax * (1.0f - fabsf(a) / 1.2f);
   if (clear < 0.35f) v *= 0.6f;                                      // slow down near walls
   float dg = hypotf(X[n - 1] - e.x, Y[n - 1] - e.y); if (v > 0.08f + 0.5f * dg) v = 0.08f + 0.5f * dg;
-  w = 2.0f * v * sinf(a) / L; if (w > 1.2f) w = 1.2f; if (w < -1.2f) w = -1.2f;
+  w = 2.0f * v * fsin(a) / L; if (w > 1.2f) w = 1.2f; if (w < -1.2f) w = -1.2f;
 }
 
 // ---------------------------------------------------------------- the whole run
