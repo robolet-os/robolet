@@ -11,3 +11,4 @@ results/*.csv
 firmware/gazebo/server.log
 firmware/updates/
 firmware/MANIFEST.sha256
+Claude outputs/
